@@ -4,8 +4,12 @@
 
 /*** グローバル定数 ***/
 int win = 0;
-char
+
 /*** 構造体 ***/
+typedef struct {
+	char name[1024];
+	int hp;
+} Monster;
 
 /*** 関数 ***/
 void goDungeon(char* playerName)
@@ -22,12 +26,15 @@ void doBattle(char* monsterName)
 
 int main(int argc, char** argv)
 {
+	char playerName[1024];
+	Monster suzaku = {"suzaku", 100};
+
 	printf("*** Puzzle & Monsters ***\n");
 	printf("What's your name?\n");
 	scanf("%s", playerName);
 	while (win < 5) {
-		goDungeon();
-		doBattle();
+		goDungeon(playerName);
+		doBattle(suzaku.name);
 	}
 	return 0;
 }
