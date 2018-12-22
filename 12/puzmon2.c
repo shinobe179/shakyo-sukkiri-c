@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 /*** 列挙型宣言 ***/
-enum{FIRE, WATER, WIND, EARTH, LIFE, EMPTY};
+typedef enum Element {FIRE, WATER, WIND, EARTH, LIFE, EMPTY} Element;
 
 /*** グローバル定数 ***/
 char ELEMENT_SYMBOLS[6] = {'$', '~', '@', '#', '&', ' '};
@@ -9,61 +9,104 @@ char ELEMENT_SYMBOLS[6] = {'$', '~', '@', '#', '&', ' '};
 char ELEMENT_COLORS[6] = {'1', '4', '2', '3', '5', '0'};
 
 /*** 構造体 ***/
-typedef struct {
-	char name[1024];
+typedef struct MONSTER {
+	char* name;
+	Element element;
+	int maxhp;
 	int hp;
-	char attr[1024];
 	int attack;
 	int defense;
 } Monster;
 
+typedef struct DUNGEON {
+	Monster* monsters;
+	const int numMonsters;
+} Dungeon;
+
+/*** プロトタイプ宣言 ***/
+int goDungeon(char* playerName, Dungeon* pDungeon);
+int doBattle(char* playerName, Monster* pEnemy);
+
+void printMonsterName(Monster* monster);
+
 /*** 関数 ***/
-void goDungeon(char* playerName)
-{
-	printf("%sはダンジョンに到着した\n", playerName);
-}
-
-void doBattle(char* monsterName)
-{
-	printf("%sが現れた\n", monsterName);
-	win++;
-	printf("%sを倒した\n", monsterName);
-}
 
 
+// ゲーム開始から終了までの流れ
 int main(int argc, char** argv)
 {
-	char playerName[1024];
-	int win = 0;
-
-// friend
-	Monster suzaku = {"朱雀", 150, "FIRE", 25, 10};
-	Monster seiryu = {"青龍", 150, "WIND", 15, 10};
-	Monster byakko = {"白虎", 150, "EARTH", 20, 5};
-	Monster genbu  = {"玄武", 150, "WATER", 20, 15};
-
-// player
-	int playerHp = suzaku.hp + seiryu.hp + byakko.hp + genbu.hp;
-
-// enemy
-	Monster slime   = {"スライム", 100, "WATER", 10, 5};
-	Monster goblin  = {"ゴブリン", 200, "EARTH", 20, 15};
-	Monster bigbat  = {"オオコウモリ", 300, "WIND", 30, 25};
-	Monster werwolf = {"ウェアウルフ", 400, "WIND", 40, 30};
-	Monster dragon  = {"ドラゴン", 800, "FIRE", 50, 40};
+	if(argc != 2) {
+		printf("please specify player name.\n");
+		return 1;
+	}
 
 	printf("*** Puzzle & Monsters ***\n");
-	printf("What's your name?\n");
-	scanf("%s", playerName);
-	while (win < 5) {
-		goDungeon(playerName);
-		doBattle(slime.name);
+
+	//char playerName[1024];
+	//int win = 0;
+
+	// friend
+	// Monster suzaku = {"朱雀", 150, "FIRE", 25, 10};
+	// Monster seiryu = {"青龍", 150, "WIND", 15, 10};
+	// Monster byakko = {"白虎", 150, "EARTH", 20, 5};
+	// Monster genbu  = {"玄武", 150, "WATER", 20, 15};
+
+	// player
+	//int playerHp = suzaku.hp + seiryu.hp + byakko.hp + genbu.hp;
+
+	// prepare dangeon
+	Monster dungeonMonsters[] = {
+		{"スライム", WATER, 100, 100, 10, 5},
+		{"ゴブリン", EARTH, 200, 200, 20, 15},
+		{"オオコウモリ", WIND, 300, 300, 30, 25},
+		{"ウェアウルフ", WIND, 400, 400, 40, 30},
+		{"ドラゴン", FIRE, 800, 800, 50, 40}
+	};
+	Dungeon dungeon = {dungeonMonsters, 5};
+
+	int winCount = goDungeon(argv[1], &dungeon);
+
+	// closing
+	if(winCount = dungeon.numMonsters) {
+		printf("***GAME CLEAR!***\n");
+	} else {
+		printf("***GAME OVER...***\n");
 	}
+	printf("monster beat=%d\n", winCount);
 	return 0;
 }
 
-/*** ユーティリティ関数 ***/
-void printMonsterName(Monster monster)
+int goDungeon(char* playerName, Dungeon* pDungeon)
 {
-	printf("\x1b[3%sm%s\x1b[0m", monster.attr, monster.name);
+	printf("%s arrive dangeon.\n", playerName);
+
+	// continue to battle in dungeon
+	int winCount = 0;
+	for(int i = 0; i < pDungeon->numMonsters; i++) {
+		winCount += doBattle(playerName, &(pDungeon->monsters[i]));
+	}
+	printf("%s accomplish dangeon!\n", playerName);
+	return winCount;
+}
+
+int doBattle(char* monsterName, Monster* pEnemy)
+{
+	printMonsterName(pEnemy);
+	printf(" appear.\n");
+
+	printMonsterName(pEnemy);
+	printf(" is beated.\n");
+	return 1;
+}
+
+/*** Utility Functions ***/
+
+// Display monster name with color
+void printMonsterName(Monster* pMonster)
+{
+	char symbol = ELEMENT_SYMBOLS[pMonster->element];
+
+	printf("\x1b[3%dm", ELEMENT_COLORS[pMonster->element]);
+	printf("%c%s%c", symbol, pMonster->name, symbol);
+	printf("\x1b[0m");
 }
