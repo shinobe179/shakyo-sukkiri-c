@@ -42,19 +42,7 @@ int main(int argc, char** argv)
 
 	printf("*** Puzzle & Monsters ***\n");
 
-	//char playerName[1024];
-	//int win = 0;
-
-	// friend
-	// Monster suzaku = {"朱雀", 150, "FIRE", 25, 10};
-	// Monster seiryu = {"青龍", 150, "WIND", 15, 10};
-	// Monster byakko = {"白虎", 150, "EARTH", 20, 5};
-	// Monster genbu  = {"玄武", 150, "WATER", 20, 15};
-
-	// player
-	//int playerHp = suzaku.hp + seiryu.hp + byakko.hp + genbu.hp;
-
-	// prepare dangeon
+	// Monster[]型変数
 	Monster dungeonMonsters[] = {
 		{"スライム", WATER, 100, 100, 10, 5},
 		{"ゴブリン", EARTH, 200, 200, 20, 15},
@@ -62,11 +50,13 @@ int main(int argc, char** argv)
 		{"ウェアウルフ", WIND, 400, 400, 40, 30},
 		{"ドラゴン", FIRE, 800, 800, 50, 40}
 	};
+	// Dungeon型変数
+	// TODO: 配列の長さを調べる関数があれば5を置き換えられるのでは？
 	Dungeon dungeon = {dungeonMonsters, 5};
 
 	int winCount = goDungeon(argv[1], &dungeon);
 
-	// closing
+	// ゲームクリア判定
 	if(winCount = dungeon.numMonsters) {
 		printf("***GAME CLEAR!***\n");
 	} else {
@@ -76,34 +66,42 @@ int main(int argc, char** argv)
 	return 0;
 }
 
+// プレイヤー名とDungeon型変数のポインタを引数にとって、モンスターの数だけバトルする
+// 戻り値はバトルに勝った回数
 int goDungeon(char* playerName, Dungeon* pDungeon)
 {
 	printf("%s arrive dangeon.\n", playerName);
 
-	// continue to battle in dungeon
+  // main関数とは別スコープの勝利数管理用変数を宣言
 	int winCount = 0;
 	for(int i = 0; i < pDungeon->numMonsters; i++) {
+		// doBattle関数に対して、プレイヤー名とDungeon型変数のモンスター名をポインタ渡し
 		winCount += doBattle(playerName, &(pDungeon->monsters[i]));
 	}
 	printf("%s accomplish dangeon!\n", playerName);
 	return winCount;
 }
 
-int doBattle(char* monsterName, Monster* pEnemy)
+// 
+int doBattle(char* playerName, Monster* pEnemy)
 {
 	printMonsterName(pEnemy);
 	printf(" appear.\n");
 
+	// TODO: バトル処理
+
+	// 勝利時処理
 	printMonsterName(pEnemy);
 	printf(" is beated.\n");
 	return 1;
 }
 
-/*** Utility Functions ***/
+/*** ユーティリティ変数 ***/
 
-// Display monster name with color
+// モンスター名を色付きで表示
 void printMonsterName(Monster* pMonster)
 {
+	// モンスターの属性をポインタ渡し
 	char symbol = ELEMENT_SYMBOLS[pMonster->element];
 
 	printf("\x1b[3%dm", ELEMENT_COLORS[pMonster->element]);
