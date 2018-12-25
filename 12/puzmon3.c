@@ -23,6 +23,13 @@ typedef struct DUNGEON {
 	const int numMonsters;
 } Dungeon;
 
+typedef struct PARTY {
+	int maxhp;
+	int hp;
+	char* playerName;
+	Monster* partyMonsters[];
+} Party;
+
 /*** プロトタイプ宣言 ***/
 int goDungeon(char* playerName, Dungeon* pDungeon);
 int doBattle(char* playerName, Monster* pEnemy);
@@ -52,12 +59,13 @@ int main(int argc, char** argv)
 	};
 
 	// 味方モンスター格納用Monster[]変数
-	Monster myMonsters[] = {
+	Monster partyMonsters[] = {
 		{"朱雀", FIRE, 150, 150, 25, 10},
 		{"青龍", WATER, 150, 150, 15, 10},
 		{"白虎", WIND,  150, 150, 20, 5},
 		{"玄武", EARTH,  150, 150, 20, 15}
 	};
+
 
 	// Dungeon型変数
 	// TODO: 配列の長さを調べる関数があれば5を置き換えられるのでは？
@@ -81,8 +89,8 @@ int goDungeon(char* playerName, Dungeon* pDungeon)
 {
 	printf("%s arrive dangeon.\n", playerName);
 
-	// TODO:味方モンスターのHP合計を表示
-
+	// TODO:味方モンスターのHP合計やモンスターのパラメータを表示
+	
   // main関数とは別スコープの勝利数管理用変数を宣言
 	int winCount = 0;
 	for(int i = 0; i < pDungeon->numMonsters; i++) {
@@ -106,6 +114,13 @@ int doBattle(char* playerName, Monster* pEnemy)
 	printf(" is beated.\n");
 	return 1;
 }
+
+// TODO: プレイヤーと味方モンスターを渡し、パーティを返す
+//Party organizeParty(char* playerName, Monster* pPartyMonsters)
+//{
+//	
+//}
+
 
 /*** ユーティリティ変数 ***/
 
